@@ -24,7 +24,10 @@
 	$: style = `fill: ${isOpen ? "#0ff" : "#f0f"};d: path( "${path}" )`;
 
 	function test() {
-		$ActiveCard = Id;
+		if($ActiveCard == Id)
+			$ActiveCard = "";
+		else	
+			$ActiveCard = Id;
 	}
 </script>
 
