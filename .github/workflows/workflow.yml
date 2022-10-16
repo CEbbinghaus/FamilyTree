@@ -22,7 +22,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_SECRET }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages publish dist --project-name=familytree | tee publish.log
+          command: pages publish .svelte-kit/cloudflare --project-name=familytree | tee publish.log
 
       - name: set DeploymentUrl as Output
         id: deploy-url
