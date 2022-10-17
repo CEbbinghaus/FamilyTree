@@ -3,11 +3,14 @@
 	import SvgBox from './SvgBox.svelte';
 
 	import {onMount} from 'svelte';
-  
-	export const width = 1920;
-	export const height = 1080;
 
-	const gridSize = 20;
+
+	export const minZoom = 0.1;
+	export const maxZoom = 10;
+	export let width = 1920;
+	export let height = 1080;
+
+	const gridSize = 100;
 
 	let svgElement: HTMLElement;
 	let gElement: HTMLElement;
@@ -17,6 +20,8 @@
 
 		// Call this function to modify the pattern when zooming/panning.
 		function updateGrid(zoomEvent: any) {
+			let opacity = Math.min(Math.max(zoomEvent.transform.k, 0.4), 1);
+			console.log(opacity)
 			select(gridElement)
 				.attr('x', zoomEvent.transform.x)
 				.attr('y', zoomEvent.transform.y)
@@ -25,14 +30,14 @@
 				.selectAll('path')
 					.attr('x', gridSize * zoomEvent.transform.k / 2)
 					.attr('y', gridSize * zoomEvent.transform.k / 2)
-					.attr('opacity', Math.min(zoomEvent.transform.k, 1)); // Lower opacity as the pattern gets more dense.
+					.attr('opacity', opacity); // Lower opacity as the pattern gets more dense.
 		}
 
 		const g = select(gElement);
 
 		// create zoom handler
 		const zoom = (d3Zoom()
-			.scaleExtent([.5, 5])
+			.scaleExtent([minZoom, maxZoom])
 			.on("zoom", function (evt) {
 				g.attr("transform", evt.transform);
 				updateGrid(evt);
@@ -53,10 +58,11 @@
 	
 	})
 </script>
+
+<svelte:window  bind:innerWidth={width} bind:innerHeight={height}></svelte:window>
   
 <svg bind:this={svgElement}>
 	<defs>
-
 		<pattern bind:this={gridElement} id="grid" x=0 y=0 width="{gridSize}" height="{gridSize}" patternUnits="userSpaceOnUse">
 		  <path d="M {gridSize * 10} 0 L 0 0 0 {gridSize * 10}" fill="none" stroke="gray" stroke-width="1"/>
 		</pattern> 

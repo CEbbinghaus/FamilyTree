@@ -1,5 +1,6 @@
 import Surreal from 'surrealdb.js';
 import './Env'
+import { SURREALDB_PASS, SURREALDB_USER } from './Env';
 
 const db = new Surreal('https://surrealdb.cerver.au/rpc');
 let connected = false;

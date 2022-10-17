@@ -38,5 +38,5 @@ path {
 </style>
 
 <g transform={`translate(${data.x},${data.y})`}>
-	<path on:click={test} style="{style}"/>
+	<path on:click={test} on:keypress={test} style="{style}"/>
 </g>
