@@ -10,7 +10,7 @@
 }
 </style>
 
-<SvgContainer />
+<SvgContainer/>
 
 <div class="dcsswarning hidden absolute top-0 left-0 w-full h-full backdrop-blur-[1.5px]">
 	<div class="absolute top-[12.5%] left-[12.5%] w-3/4 h-3/4 bg-slate-400 text-center p-20">

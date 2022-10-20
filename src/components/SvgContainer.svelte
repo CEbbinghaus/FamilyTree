@@ -5,10 +5,16 @@
 	import {onMount} from 'svelte';
 
 
-	export const minZoom = 0.1;
-	export const maxZoom = 10;
-	export let width = 1920;
-	export let height = 1080;
+	export let minZoom = 0.1;
+	export let maxZoom = 10;
+	export let width: number;
+	export let height: number;
+
+	let innerWidth: number;
+	let innerHeight: number;
+
+	$: calculatedWidth = width || innerWidth || 0;
+	$: calculatedHeight = height || innerHeight || 0;
 
 	const gridSize = 100;
 
@@ -17,11 +23,17 @@
 	let gridElement: HTMLElement;
 
 	onMount(() => {
+		// svelte:window does not set its properties before onMount so we have to set them manually
+		innerWidth = window.innerWidth;
+		innerHeight = window.innerHeight;
+
+		// we have to manually process it in the onMount since the reactive state doesn't recompute until after te function has exited
+		calculatedWidth = width || innerWidth;
+		calculatedHeight = height || innerHeight;
 
 		// Call this function to modify the pattern when zooming/panning.
 		function updateGrid(zoomEvent: any) {
 			let opacity = Math.min(Math.max(zoomEvent.transform.k, 0.4), 1);
-			console.log(opacity)
 			select(gridElement)
 				.attr('x', zoomEvent.transform.x)
 				.attr('y', zoomEvent.transform.y)
@@ -45,7 +57,7 @@
 
 		// make a svg
 		const svg = select(svgElement)
-			.attr("viewBox", [0, 0, width, height])
+			// .attr("viewBox", [0, 0, calculatedWidth, calculatedHeight])
 			//@ts-ignore
 			.call(zoom);
 			
@@ -53,15 +65,15 @@
 		svg.call(
 			//@ts-ignore
 			zoom.transform,
-			zoomIdentity.translate(width / 2, height / 2).scale(1)
+			zoomIdentity.translate(calculatedWidth / 2, calculatedHeight / 2).scale(1)
 		).on("dblclick.zoom", null);
 	
 	})
 </script>
 
-<svelte:window  bind:innerWidth={width} bind:innerHeight={height}></svelte:window>
-  
-<svg bind:this={svgElement}>
+<svelte:window  bind:innerWidth bind:innerHeight></svelte:window>
+
+<svg width={calculatedWidth} height={calculatedHeight} bind:this={svgElement} viewBox="0, 0, {calculatedWidth}, {calculatedHeight}">
 	<defs>
 		<pattern bind:this={gridElement} id="grid" x=0 y=0 width="{gridSize}" height="{gridSize}" patternUnits="userSpaceOnUse">
 		  <path d="M {gridSize * 10} 0 L 0 0 0 {gridSize * 10}" fill="none" stroke="gray" stroke-width="1"/>
@@ -69,7 +81,7 @@
 	</defs>
 		  
 	<rect width="100%" height="100%" fill="url(#grid)" />
-	<g bind:this={gElement} transform="translate({width / 2}, {height / 2})">
+	<g bind:this={gElement} transform="translate({calculatedWidth / 2}, {calculatedHeight / 2})">
 		<SvgBox data={{x: 0, y: 0, width: 100, height: 100}}/>
 		<SvgBox data={{x: -300, y: -300, width: 100, height: 100}}/>
 		<SvgBox data={{x: 300, y: -300, width: 100, height: 100}}/>
